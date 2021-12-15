@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-analytics.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDgLmimIUzU3OgdrDpbYineTaBnCxJYWMQ",
+    authDomain: "sistema-de-riego-agrotec.firebaseapp.com",
+    databaseURL: "https://sistema-de-riego-agrotec-default-rtdb.firebaseio.com",
+    projectId: "sistema-de-riego-agrotec",
+    storageBucket: "sistema-de-riego-agrotec.appspot.com",
+    messagingSenderId: "605688727800",
+    appId: "1:605688727800:web:591036719507067cdf930d",
+    measurementId: "G-NV9HZFPT29"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const database = getDatabase(app);
+  const lecthumi = ref(database,"FuncionaPls/Sensores/Humedad/");
+  const lecttemp = ref(database,"FuncionaPls/Sensores/Temperatura/");
+  function UpdateValues(num, location){
+      var ptemp = document.getElementById(location);
+      var aux = document.createElement("tr")
+      if (location == "Temperature"){
+        aux.innerHTML = num + "°C";
+        if (num>=16&&num<=29){
+          aux.bgColor = "#cef29b";
+        } else if (num>29) {
+          aux.bgColor = "#f5c6a9";
+        } else {
+          aux.bgColor = "#bbf6fc";
+        }
+      } else{
+        aux.innerHTML = num + "%";
+        if (num>=12&&num<=24){
+          aux.bgColor = "#cef29b";
+        } else if (num>24 <= 35) {
+          aux.bgColor = "#f5c6a9";
+        } else {
+          aux.bgColor = "#bbf6fc";
+        }
+      }
+      var x = document.getElementById(location).rows.length;
+      if (x>1){
+        ptemp.appendChild(aux);
+      } else{
+        ptemp.replaceChild(aux, ptemp.firstChild);
+      }
+  };
+  function processData(data, location){
+      var registry = data.val();
+      var keys = Object.keys(registry);
+      var k = keys.length - 1;
+      var id = keys[k];
+      var number = registry[id];
+      UpdateValues(number, location)
+  };
+  onValue(lecttemp, (values) => {
+  const data = values.val(); // Data contiene valores
+  processData(values, "Temperature");
+  });
+  onValue(lecthumi, (values) => {
+  const data = values.val(); // Data contiene valores
+  processData(values, "Humidity");
+  });
+</script>
+<html lang="en">
+<head>
+  <title>Invernadero AgroTEC - Equipo AgroTEC</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/flatly/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+  body {
+    font: 400 15px Lato, sans-serif;
+    line-height: 1.8;
+    color: #2fa34c;
+  }
+  h2 {
+    font-size: 24px;
+    text-transform: uppercase;
+    color: #303030;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+  h4 {
+    font-size: 19px;
+    line-height: 1.375em;
+    color: #303030;
+    font-weight: 400;
+    margin-bottom: 30px;
+  }  
+  .jumbotron {
+    background: linear-gradient(to right,  #f8fc2cbd, #1fa4d8c4);
+    color: black;
+    padding: 100px 25px;
+    font-family: Montserrat, sans-serif;
+  }
+  .container-fluid {
+    padding: 60px 50px;
+  }
+  .bg-grey {
+    background: linear-gradient(to right,  #5cfc2cbd, #d8721fb2);
+  }
+  .Logo {
+    height: 50px;
+  }
+  .thumbnail {
+    padding: 0 0 15px 0;
+    border: none;
+    border-radius: 0;
+  }
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 10px;
+  }
+  .reading {
+    text-align: center;
+    font-size: 30px;
+  }
+  .data-img {
+    max-width: 500px;
+    max-height: 300px;
+    margin: 0 5px;
+    border-radius: 20px;
+  }
+  .carousel-indicators li {
+    border-color: #f5c6a9;
+  }
+  .carousel-indicators li.active {
+    background: linear-gradient(to right,  #5cfc2cbd, #1fa4d8c4);
+  }
+  .item h4 {
+    font-size: 19px;
+    line-height: 1.375em;
+    font-weight: 400;
+    margin: 70px 0;
+  }
+  .item span {
+    font-style: normal;
+  }
+  .panel {
+    border: 1px solid #f5c6a9; 
+    border-radius:0 !important;
+    transition: box-shadow 0.5s;
+  }
+  .panel:hover {
+    box-shadow: 5px 0px 40px rgba(0,0,0, .2);
+  }
+  .navbar {
+    margin-bottom: 0;
+    background: linear-gradient(to right,  #5cfc2cbd, #1fa4d8c4);
+    z-index: 9999;
+    border: 0;
+    font-size: 12px !important;
+    line-height: 1.42857143 !important;
+    letter-spacing: 4px;
+    border-radius: 0;
+    font-family: Montserrat, sans-serif;
+  }
+  .navbar li a, .navbar .navbar-brand {
+    color: black !important;
+  }
+  .navbar-nav li a:hover, .navbar-nav li.active a {
+    color: #1e41a3 !important;
+    background-color: black !important;
+  }
+  .navbar-default .navbar-toggle {
+    border-color: transparent;
+    color: black !important;
+  }
+  </style>
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="60">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>                      
+      </button>
+      
+      <img align="left" src="Logo.png" class="Logo">
+      <a class="navbar-brand">AgroTEC</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#equipo">NOSOTROS</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="jumbotron text-center">
+  <h1>AgroTEC</h1> 
+  <p>Invernadero AgroTEC</p> 
+</div>
+
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body" width="540px" align="center">
+        <table id="r-table">
+          <thead>
+            <th class="card-title">Temperatura</th>
+          </thead>
+          <tbody class="reading" id="Temperature">  
+          
+          </tbody>
+        </table>
+        <img class="data-img" src="temperature.jpeg">
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body" width="540px" align="center">
+        <table id="r-table">
+          <thead>
+            <th class="card-title">Humedad</th>
+          </thead>
+          <tbody class="reading" id="Humidity">  
+          
+          </tbody>
+        </table>
+        <img class="data-img" src="humidity.jpeg">
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
